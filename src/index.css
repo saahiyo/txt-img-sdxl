@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+:root {
+  --md3-bg: #18181B;
+  --md3-surface: #232326;
+  --md3-primary: #B6AFFF;
+  --md3-on-primary: #232326;
+  --md3-secondary: #E0E0E0;
+  --md3-text: #FFFFFF;
+  --md3-border: #353535;
+  --md3-radius: 0.75rem;
+  --md3-shadow: 0 2px 8px 0 rgba(0,0,0,0.18);
+}
+
+body {
+  background: var(--md3-bg);
+  color: var(--md3-text);
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+}
+
+/* Utility classes for Material 3 look */
+.md3-surface {
+  background: var(--md3-surface);
+  border-radius: var(--md3-radius);
+  box-shadow: var(--md3-shadow);
+  border: 1px solid var(--md3-border);
+}
+
+.md3-btn {
+  background: var(--md3-primary);
+  color: var(--md3-on-primary);
+  border-radius: 9999px;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  transition: background 0.2s, color 0.2s;
+}
+.md3-btn:hover, .md3-btn:focus {
+  background: #D1C4FF;
+  color: var(--md3-surface);
+}
+
+/* Icon button styles */
+.md3-btn-icon {
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--md3-text);
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+.md3-btn-icon:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.05);
+}
+
+/* Chip styles */
+.md3-chip {
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--md3-text);
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.md3-input {
+  background: var(--md3-surface);
+  border: 1.5px solid var(--md3-border);
+  border-radius: var(--md3-radius);
+  color: var(--md3-text);
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+.md3-input:focus {
+  border-color: var(--md3-primary);
+  outline: none;
+}
+
+.md3-label {
+  color: var(--md3-secondary);
+  font-weight: 500;
+  margin-bottom: 0.15rem;
+}
+
+.md3-tab {
+  border-radius: 9999px;
+  padding: 0.35rem 0.75rem;
+  font-weight: 500;
+  color: var(--md3-secondary);
+  background: transparent;
+  border: none;
+  transition: background 0.2s, color 0.2s;
+}
+.md3-tab.selected {
+  background: var(--md3-primary);
+  color: var(--md3-on-primary);
+}
+
+.md3-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--md3-text);
+  margin-bottom: 1rem;
+}
+
+.md3-card {
+  background: var(--md3-surface);
+  border-radius: var(--md3-radius);
+  box-shadow: var(--md3-shadow);
+  border: 1px solid var(--md3-border);
+  padding: 1.25rem;
+}
+
+.md3-link {
+  color: var(--md3-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Animation classes */
+@keyframes slide-in-from-bottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation: slide-in-from-bottom 0.3s ease-out;
+}
+
+.slide-in-from-bottom-2 {
+  animation: slide-in-from-bottom 0.3s ease-out;
+}
