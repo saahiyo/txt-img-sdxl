@@ -246,17 +246,9 @@ function App() {
       {showInfoPage && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 animate-fade-in">
           <div className="absolute inset-0" onClick={() => setShowInfoPage(false)} tabIndex={-1} aria-label="Close info overlay" />
-          <div className="relative flex flex-col items-center w-full max-w-md mx-4 p-0">
-            <button
-              className="absolute -top-12 left-0 md3-btn-icon bg-white/80 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--md3-primary)] shadow"
-              onClick={() => setShowInfoPage(false)}
-              aria-label="Back"
-              type="button"
-              style={{backdropFilter: 'blur(2px)'}}
-            >
-              <BackIcon />
-            </button>
-            <div className="w-full bg-white/95 dark:bg-[var(--md3-surface)] rounded-2xl shadow-2xl px-8 py-8 border-0 flex flex-col animate-scale-fade-in">
+          <div className="relative flex flex-col items-center w-full max-w-2xl mx-4 p-0"> {/* Increased max-w-md to max-w-2xl */}
+            {/* Removed Back button */}
+            <div className="w-full bg-white/95 dark:bg-[var(--md3-surface)] rounded-2xl shadow-2xl px-12 py-12 border-0 flex flex-col animate-scale-fade-in"> {/* Increased px-8 py-8 to px-12 py-12 */}
               <div className="font-extrabold text-3xl mb-2 tracking-tight" style={{letterSpacing: '-0.01em'}}>AI Image Generator</div>
               <div className="text-base mb-4 font-medium text-gray-700 dark:text-[var(--md3-secondary)]">by <a href="https://github.com/saahiyo" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">saahiyo</a></div>
               <div className="text-xs break-all mb-4 text-gray-500 dark:text-[var(--md3-secondary)]">Project Repo:<br/>
