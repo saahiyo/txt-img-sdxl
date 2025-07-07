@@ -58,11 +58,18 @@ const ErrorDisplay = ({ message }) => (
 
 // Placeholder for the image area
 const ImagePlaceholder = () => (
-  <div className="flex flex-col items-center justify-center h-full text-center md3-surface border-2 border-dashed border-[var(--md3-border)] p-2">
+  <div className="flex flex-col items-center justify-center h-full w-full text-center md3-surface border-2 border-dashed border-[var(--md3-border)] p-2">
     <svg className="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
     <h3 className="font-semibold">Your Image Will Appear Here</h3>
     <p className="text-sm">Enter a prompt and click "Generate" to create an image.</p>
   </div>
+);
+
+// Add a BackIcon component
+const BackIcon = () => (
+  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+  </svg>
 );
 
 // --- Main App Component ---
@@ -83,6 +90,8 @@ function App() {
   
   // State to store the actual generation parameters for the current image
   const [generatedImageData, setGeneratedImageData] = useState(null);
+  const [showInfo, setShowInfo] = useState(false);
+  const [showInfoPage, setShowInfoPage] = useState(false);
 
   // API endpoint from your server.js configuration
   const API_URL = 'http://localhost:3001/api/generate';
@@ -221,6 +230,43 @@ function App() {
   // Main component render method
   return (
     <div className="min-h-screen bg-[var(--md3-bg)] text-[var(--md3-text)] font-sans flex flex-col md:flex-row">
+      {/* Info Chip (always visible, top right) */}
+      <button
+        className="fixed top-4 right-4 z-50 md3-chip flex items-center gap-2 bg-[var(--md3-surface)] border border-[var(--md3-primary)] hover:bg-[var(--md3-primary)] hover:text-white transition-colors shadow-md"
+        style={{ fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', letterSpacing: '0.01em' }}
+        onClick={() => setShowInfoPage(true)}
+        title="About this project"
+        aria-label="About this project"
+        type="button"
+      >
+        <span>i</span>
+        <span className="hidden sm:inline">Info</span>
+      </button>
+      {/* Info Fullscreen Page */}
+      {showInfoPage && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 animate-fade-in">
+          <div className="absolute inset-0" onClick={() => setShowInfoPage(false)} tabIndex={-1} aria-label="Close info overlay" />
+          <div className="relative flex flex-col items-center w-full max-w-md mx-4 p-0">
+            <button
+              className="absolute -top-12 left-0 md3-btn-icon bg-white/80 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--md3-primary)] shadow"
+              onClick={() => setShowInfoPage(false)}
+              aria-label="Back"
+              type="button"
+              style={{backdropFilter: 'blur(2px)'}}
+            >
+              <BackIcon />
+            </button>
+            <div className="w-full bg-white/95 dark:bg-[var(--md3-surface)] rounded-2xl shadow-2xl px-8 py-8 border-0 flex flex-col animate-scale-fade-in">
+              <div className="font-extrabold text-3xl mb-2 tracking-tight" style={{letterSpacing: '-0.01em'}}>AI Image Generator</div>
+              <div className="text-base mb-4 font-medium text-gray-700 dark:text-[var(--md3-secondary)]">by <a href="https://github.com/saahiyo" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">saahiyo</a></div>
+              <div className="text-xs break-all mb-4 text-gray-500 dark:text-[var(--md3-secondary)]">Project Repo:<br/>
+                <a href="https://github.com/saahiyo/txt-img-sdxl" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">github.com/saahiyo/txt-img-sdxl</a>
+              </div>
+              <div className="mt-2 text-xs text-gray-400 dark:text-[var(--md3-secondary)]">Stable Diffusion XL via Express.js proxy.<br/>Modern UI, open source, made with <span className="text-pink-500">♥</span>.</div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* --- Controls Sidebar --- */}
       <aside className="w-full md:w-96 md3-surface p-4 space-y-4 flex-shrink-0 flex flex-col">
         <header>
@@ -238,7 +284,8 @@ function App() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="e.g., A futuristic cityscape at sunset, neon lights reflecting on wet streets"
-              className="w-full h-20 md3-input"
+              className="w-full h-20 md3-input scrollbar-hide"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             />
           </div>
 
@@ -250,7 +297,8 @@ function App() {
               value={negativePrompt}
               onChange={(e) => setNegativePrompt(e.target.value)}
               placeholder="Things to avoid in the image"
-              className="w-full h-14 md3-input"
+              className="w-full h-14 md3-input scrollbar-hide"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             />
           </div>
 
@@ -360,17 +408,52 @@ function App() {
 
       {/* Fullscreen Modal */}
       {isFullscreen && generatedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-          <div className="relative max-w-full max-h-full">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 fullscreen-modal overflow-auto"
+          tabIndex={-1}
+          aria-modal="true"
+          role="dialog"
+        >
+          <div className="relative max-w-full max-h-full shadow-2xl rounded-xl bg-[var(--md3-surface)] p-2 overflow-hidden">
+            {/* Info Button */}
+            <button
+              className="absolute top-4 left-4 md3-btn-icon bg-black bg-opacity-50 hover:bg-opacity-70 focus:outline-none focus:ring-2 focus:ring-[var(--md3-primary)]"
+              title="About this project"
+              aria-label="About this project"
+              onClick={() => setShowInfo((v) => !v)}
+              type="button"
+            >
+              <span style={{fontWeight: 'bold', fontSize: '1.2rem'}}>i</span>
+            </button>
+            {/* Info Popover */}
+            {showInfo && (
+              <div className="absolute top-14 left-4 bg-white bg-opacity-95 text-black rounded-lg shadow-lg p-4 z-50 min-w-[220px] border border-gray-200 animate-in slide-in-from-top-2">
+                <div className="font-semibold mb-1">AI Image Generator</div>
+                <div className="text-sm mb-2">by <a href="https://github.com/saahiyo" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">saahiyo</a></div>
+                <div className="text-xs break-all">Project Repo:<br/>
+                  <a href="https://github.com/saahiyo/txt-img-sdxl" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">github.com/saahiyo/txt-img-sdxl</a>
+                </div>
+                <button
+                  className="absolute top-2 right-2 text-gray-500 hover:text-black"
+                  onClick={() => setShowInfo(false)}
+                  aria-label="Close info"
+                  type="button"
+                >
+                  ×
+                </button>
+              </div>
+            )}
             <img 
               src={generatedImage} 
               alt="Generated by AI" 
-              className="max-w-full max-h-full object-contain"
+              className="max-w-[100vw] max-h-[100vh] object-contain rounded-lg"
             />
             <button
               onClick={toggleFullscreen}
-              className="absolute top-4 right-4 md3-btn-icon bg-black bg-opacity-50 hover:bg-opacity-70"
+              className="absolute top-4 right-4 md3-btn-icon bg-black bg-opacity-50 hover:bg-opacity-70 focus:outline-none focus:ring-2 focus:ring-[var(--md3-primary)]"
               title="Close"
+              aria-label="Close fullscreen image"
+              autoFocus
             >
               <CloseIcon />
             </button>
