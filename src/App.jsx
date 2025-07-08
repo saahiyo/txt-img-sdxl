@@ -128,13 +128,13 @@ function App() {
   // Download image
   const downloadImage = async () => {
     if (!generatedImage) return;
-    
     try {
-      const response = await fetch(generatedImage);
+      // Use the backend proxy to avoid CORS issues
+      const proxyUrl = `/api/download-image?url=${encodeURIComponent(generatedImage)}`;
+      const response = await fetch(proxyUrl);
       if (!response.ok) {
         throw new Error('Failed to fetch image');
       }
-      
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
