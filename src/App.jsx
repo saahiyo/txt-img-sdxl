@@ -125,32 +125,18 @@ function App() {
     }
   };
 
-  const downloadImage = async () => {
+  // download image function
+  const downloadImage = () => {
     if (!generatedImage) return;
-  
-    try {
-      // Fetch the image data
-      const response = await fetch(generatedImage, { mode: 'cors' });
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-  
-      // Create a temporary anchor element to trigger download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `generated-image-${Date.now()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-  
-      // Clean up the blob URL
-      URL.revokeObjectURL(url);
-  
-      showToastMessage('Image downloaded!');
-    } catch (error) {
-      console.error('Download failed:', error);
-      showToastMessage('Failed to download image!');
-    }
+    const a = document.createElement('a');
+    a.href = generatedImage;
+    a.download = `generated-image-${Date.now()}.png`; // <-- fixed
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToastMessage('Image downloaded!');
   };
+  
   
   
 
@@ -365,13 +351,16 @@ function App() {
                   >
                     <CopyIcon />
                   </button>
-                  <button
-                    onClick={downloadImage}
-                    className="md3-btn-icon"
-                    title="Download Image"
-                  >
-                    <DownloadIcon />
-                  </button>
+                  {generatedImage && (
+                    <a
+                      href={generatedImage}
+                      download={`generated-image-${Date.now()}.png`}
+                      className="md3-btn-icon"
+                      title="Download Image"
+                    >
+                      <DownloadIcon />
+                    </a>
+                  )}
                   <button
                     onClick={toggleFullscreen}
                     className="md3-btn-icon"
