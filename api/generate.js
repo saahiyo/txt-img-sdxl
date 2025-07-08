@@ -1,8 +1,72 @@
 import fetch from 'node-fetch';
+import fs from 'fs';
+import path from 'path';
 
 const EXTERNAL_AI_API_URL = 'https://aiart-zroo.onrender.com/api/generate';
+const GENERATIONS_PATH = path.resolve(process.cwd(), 'api/generations.json');
+const ERRORS_PATH = path.resolve(process.cwd(), 'api/errors.json');
+
+function logToFile(filePath, entry) {
+  let arr = [];
+  try {
+    if (fs.existsSync(filePath)) {
+      arr = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    }
+  } catch (e) { arr = []; }
+  arr.unshift(entry);
+  fs.writeFileSync(filePath, JSON.stringify(arr.slice(0, 1000), null, 2)); // keep last 1000
+}
 
 export default async function handler(req, res) {
+  // --- ADMIN ENDPOINTS ---
+  if (req.method === 'GET') {
+    if (req.url.endsWith('/api/admin/generations')) {
+      try {
+        const data = fs.existsSync(GENERATIONS_PATH) ? JSON.parse(fs.readFileSync(GENERATIONS_PATH, 'utf8')) : [];
+        res.status(200).json(data);
+      } catch (e) {
+        res.status(500).json({ error: 'Failed to read generations log' });
+      }
+      return;
+    }
+    if (req.url.endsWith('/api/admin/errors')) {
+      try {
+        const data = fs.existsSync(ERRORS_PATH) ? JSON.parse(fs.readFileSync(ERRORS_PATH, 'utf8')) : [];
+        res.status(200).json(data);
+      } catch (e) {
+        res.status(500).json({ error: 'Failed to read errors log' });
+      }
+      return;
+    }
+    if (req.url.endsWith('/api/admin/stats')) {
+      // Simple stats: total generations, total errors
+      const generations = fs.existsSync(GENERATIONS_PATH) ? JSON.parse(fs.readFileSync(GENERATIONS_PATH, 'utf8')) : [];
+      const errors = fs.existsSync(ERRORS_PATH) ? JSON.parse(fs.readFileSync(ERRORS_PATH, 'utf8')) : [];
+      res.status(200).json({
+        totalGenerations: generations.length,
+        totalErrors: errors.length,
+        lastGeneration: generations[0] || null,
+        lastError: errors[0] || null
+      });
+      return;
+    }
+    if (req.url.endsWith('/api/admin/config')) {
+      // Mock config summary (customize as needed)
+      res.status(200).json({
+        API_BASE_URL: process.env.VITE_API_URL || 'http://localhost:3000',
+        DEFAULT_PARAMS: {
+          negative_prompt: "blurry, low quality, distorted faces, poor lighting, extra limbs, deformed, ugly, bad anatomy",
+          style_preset: "neon-punk",
+          aspect_ratio: "16:9",
+          output_format: "png",
+          seed: 0
+        }
+      });
+      return;
+    }
+  }
+
+  // --- GENERATE ENDPOINT ---
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
@@ -31,8 +95,17 @@ export default async function handler(req, res) {
       body: JSON.stringify(payload)
     });
 
+    const timestamp = new Date().toISOString();
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      // Log error
+      logToFile(ERRORS_PATH, {
+        timestamp,
+        status: response.status,
+        error: errorData.detail || `External API error: ${response.status}`,
+        payload
+      });
       res.status(response.status).json({
         error: errorData.detail || `External API error: ${response.status}`,
         status: response.status
@@ -41,8 +114,27 @@ export default async function handler(req, res) {
     }
 
     const result = await response.json();
+    // Log generation
+    logToFile(GENERATIONS_PATH, {
+      timestamp,
+      prompt: video_description,
+      negative_prompt: payload.negative_prompt,
+      style_preset: payload.style_preset,
+      aspect_ratio: payload.aspect_ratio,
+      output_format: payload.output_format,
+      seed: payload.seed,
+      image_url: result.direct_url || result.image_url || null,
+      success: result.success || false
+    });
     res.status(200).json(result);
   } catch (error) {
+    // Log error
+    logToFile(ERRORS_PATH, {
+      timestamp: new Date().toISOString(),
+      status: 500,
+      error: error.message,
+      payload: req.body
+    });
     res.status(500).json({
       error: 'Internal server error',
       message: error.message

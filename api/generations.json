@@ -1,0 +1,24 @@
+[
+  {
+    "timestamp": "2025-07-08T10:32:18.070Z",
+    "prompt": "a cool mask hero",
+    "negative_prompt": "blurry, low quality, distorted, poor lighting, bad anatomy",
+    "style_preset": "comic-book",
+    "aspect_ratio": "16:9",
+    "output_format": "png",
+    "seed": 0,
+    "image_url": "https://aiart-zroo.onrender.com/images/sd_ultra_a_cool_mask_hero_2566472932.png",
+    "success": true
+  },
+  {
+    "timestamp": "2025-07-08T10:25:43.009Z",
+    "prompt": "a man in hoodie",
+    "negative_prompt": "blurry, low quality, distorted, poor lighting, bad anatomy",
+    "style_preset": "cinematic",
+    "aspect_ratio": "16:9",
+    "output_format": "png",
+    "seed": 0,
+    "image_url": "https://aiart-zroo.onrender.com/images/sd_ultra_a_man_in_hoodie_1261552406.png",
+    "success": true
+  }
+]
