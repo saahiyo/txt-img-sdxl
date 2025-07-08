@@ -94,7 +94,7 @@ function App() {
   const [showInfoPage, setShowInfoPage] = useState(false);
 
   // API endpoint from your server.js configuration
-  const API_URL = 'http://localhost:3001/api/generate';
+  const API_URL = 'http://localhost:3000/api/generate';
 
   // List of available style presets for the dropdown
   const stylePresets = [
