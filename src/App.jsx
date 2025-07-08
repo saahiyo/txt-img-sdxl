@@ -1,77 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { config } from './config';
-
-// --- Helper Components ---
-
-// Icon for the generate button
-const GenerateIcon = () => (
-  <svg className="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707.707M12 21v-1m0-16a8 8 0 100 16 8 8 0 000-16z"></path>
-  </svg>
-);
-
-// Copy icon
-const CopyIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-  </svg>
-);
-
-// Download icon
-const DownloadIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-  </svg>
-);
-
-// View/Expand icon
-const ViewIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-  </svg>
-);
-
-// Close icon
-const CloseIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-  </svg>
-);
-
-// Loading spinner component
-const Spinner = () => (
-  <div className="flex flex-col items-center justify-center h-full w-full md3-surface p-4">
-    <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-[var(--md3-primary)]"></div>
-    <p className="mt-4 text-[var(--md3-secondary)]">Generating your masterpiece...</p>
-  </div>
-);
-
-// Error message component
-const ErrorDisplay = ({ message }) => (
-  <div className="flex items-center justify-center h-full">
-    <div className="p-2 text-center md3-surface border border-[var(--md3-primary)]">
-      <h3 className="font-bold text-[var(--md3-primary)]">An Error Occurred</h3>
-      <p className="text-[var(--md3-secondary)]">{message}</p>
-    </div>
-  </div>
-);
-
-// Placeholder for the image area
-const ImagePlaceholder = () => (
-  <div className="flex flex-col items-center justify-center h-full w-full text-center md3-surface border-2 border-dashed border-[var(--md3-border)] p-2">
-    <svg className="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-    <h3 className="font-semibold">Your Image Will Appear Here</h3>
-    <p className="text-sm">Enter a prompt and click "Generate" to create an image.</p>
-  </div>
-);
-
-// Add a BackIcon component
-const BackIcon = () => (
-  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
-  </svg>
-);
+import InfoModal from './components/InfoModal';
+import ImagePlaceholder from './components/ImagePlaceholder';
+import ErrorDisplay from './components/ErrorDisplay';
+import { GenerateIcon, CopyIcon, DownloadIcon, ViewIcon, CloseIcon, Spinner } from './components/Icons';
 
 // --- Main App Component ---
 
@@ -124,21 +56,6 @@ function App() {
       showToastMessage('Failed to copy prompt');
     }
   };
-
-  // download image function
-  const downloadImage = () => {
-    if (!generatedImage) return;
-    const a = document.createElement('a');
-    a.href = generatedImage;
-    a.download = `generated-image-${Date.now()}.png`; // <-- fixed
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToastMessage('Image downloaded!');
-  };
-  
-  
-  
 
   // Toggle fullscreen view
   const toggleFullscreen = () => {
@@ -234,34 +151,7 @@ function App() {
         <span className="hidden sm:inline">Info</span>
       </button>
       {/* Info Fullscreen Page */}
-      {showInfoPage && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 animate-fade-in">
-          <div className="absolute inset-0" onClick={() => setShowInfoPage(false)} tabIndex={-1} aria-label="Close info overlay" />
-          <div className="relative flex flex-col items-center w-full max-w-2xl mx-4 p-0">
-            <div className="w-full bg-white/95 dark:bg-[var(--md3-surface)] rounded-2xl shadow-2xl px-10 py-10 border-0 flex flex-col animate-scale-fade-in relative">
-              <button
-                onClick={() => setShowInfoPage(false)}
-                className="absolute top-4 right-4 md3-btn-icon bg-black/10 hover:bg-black/20"
-                title="Close"
-                aria-label="Close info modal"
-              >
-                <CloseIcon />
-              </button>
-              <div className="font-extrabold text-3xl mb-2 tracking-tight text-center" style={{letterSpacing: '-0.01em'}}>AI Image Generator</div>
-              <div className="text-base mb-4 font-medium text-gray-700 dark:text-[var(--md3-secondary)] text-center">by <a href="https://github.com/saahiyo" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">saahiyo</a></div>
-              <div className="text-sm mb-6 text-gray-700 dark:text-[var(--md3-secondary)] text-center">
-                <b>Modern React app for generating images with Stable Diffusion XL (SDXL 3.5 Ultra).</b><br/>
-                Enter a prompt, select style and aspect ratio, and generate stunning AI art in seconds.<br/>
-                <span className="text-xs text-gray-500">No login required. Open source.</span>
-              </div>
-              <div className="text-xs break-all mb-2 text-gray-500 dark:text-[var(--md3-secondary)] text-center">Project Repo:<br/>
-                <a href="https://github.com/saahiyo/txt-img-sdxl" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">github.com/saahiyo/txt-img-sdxl</a>
-              </div>
-              <div className="mt-2 text-xs text-gray-400 dark:text-[var(--md3-secondary)] text-center">Stable Diffusion XL via Vercel serverless proxy.<br/>Made with <span className="text-pink-500">♥</span>.</div>
-            </div>
-          </div>
-        </div>
-      )}
+      <InfoModal show={showInfoPage} onClose={() => setShowInfoPage(false)} />
       {/* --- Controls Sidebar --- */}
       <aside className="w-full md:w-96 md3-surface p-4 space-y-4 flex-shrink-0 flex flex-col">
         <header>
