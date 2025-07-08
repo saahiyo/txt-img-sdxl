@@ -59,11 +59,9 @@ vercel dev
 
 ### Prompt Options
 - **Prompt:** Main description for the image (required)
-- **Negative Prompt:** What you want to avoid (default: `blurry, low quality, distorted, poor lighting, bad anatomy`)
-- **Style Preset:** Choose from:
-  - cinematic, photographic, anime, digital-art, comic-book, fantasy-art, analog-film, neon-punk, isometric, low-poly, origami, line-art, modeling-compound, pixel-art, tile-texture
-- **Aspect Ratio:** Choose from:
-  - 16:9, 1:1, 21:9, 2:3, 3:2, 4:5, 5:4, 9:16
+- **Negative Prompt:** What you want to avoid (default: see `src/config.js`)
+- **Style Preset:** Choose from the presets listed in the UI (default: see `src/config.js`)
+- **Aspect Ratio:** Choose from the aspect ratios listed in the UI (default: see `src/config.js`)
 
 ## API Endpoints (Serverless Functions)
 
@@ -129,10 +127,19 @@ txt-img-sdxl/
 
 ## Configuration
 
-The application uses configuration files to manage API endpoints and default parameters:
+### Centralized Frontend Configuration
 
-- `src/config.js` - Frontend configuration
+All frontend API endpoints and default generation parameters are now sourced from [`src/config.js`](src/config.js). This file is the single source of truth for:
+
+- The API base URL (`API_BASE_URL`)
+- Default generation parameters (`DEFAULT_PARAMS`)
+
+If you want to change the default negative prompt, style preset, aspect ratio, output format, or seed, simply edit the values in `src/config.js`. To point the frontend to a different backend API, update `API_BASE_URL` in the same file.
+
+**Note:** There are no longer any hardcoded API URLs or default generation values in `App.jsx`—all such settings are imported from `config.js`.
+
+### Backend and Environment Variables
 - `api/generate.js` - Serverless function configuration
 - `env.example` - Example environment variables
 
-You can customize the API URL, port, and default generation parameters by modifying these files.
+You can customize the backend API URL and other environment variables by modifying these files as needed.

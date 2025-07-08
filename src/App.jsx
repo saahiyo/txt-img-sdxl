@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { config } from './config';
 
 // --- Helper Components ---
 
@@ -77,9 +78,9 @@ const BackIcon = () => (
 function App() {
   // State management for form inputs and app status
   const [prompt, setPrompt] = useState('');
-  const [negativePrompt, setNegativePrompt] = useState('blurry, low quality, distorted, poor lighting, bad anatomy');
-  const [stylePreset, setStylePreset] = useState('cinematic');
-  const [aspectRatio, setAspectRatio] = useState('16:9');
+  const [negativePrompt, setNegativePrompt] = useState(config.DEFAULT_PARAMS.negative_prompt);
+  const [stylePreset, setStylePreset] = useState(config.DEFAULT_PARAMS.style_preset);
+  const [aspectRatio, setAspectRatio] = useState(config.DEFAULT_PARAMS.aspect_ratio);
   
   const [generatedImage, setGeneratedImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +95,7 @@ function App() {
   const [showInfoPage, setShowInfoPage] = useState(false);
 
   // API endpoint from your server.js configuration
-  const API_URL = 'http://localhost:3000/api/generate';
+  const API_URL = `${config.API_BASE_URL}/api/generate`;
 
   // List of available style presets for the dropdown
   const stylePresets = [
@@ -102,6 +103,7 @@ function App() {
     "fantasy-art", "analog-film", "neon-punk", "isometric", "low-poly", 
     "origami", "line-art", "modeling-compound", "pixel-art", "tile-texture"
   ];
+  
 
   // List of available aspect ratios
   const aspectRatios = ["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16"];
@@ -181,8 +183,8 @@ function App() {
       negative_prompt: negativePrompt,
       style_preset: stylePreset,
       aspect_ratio: aspectRatio,
-      output_format: 'png', // As per server default
-      seed: 0 // As per server default
+      output_format: config.DEFAULT_PARAMS.output_format,
+      seed: config.DEFAULT_PARAMS.seed
     };
 
     try {

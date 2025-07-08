@@ -1,17 +1,16 @@
 // Configuration for the application
 export const config = {
   // API Configuration
-  API_BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
-  
-  // External AI API URL (used by the Express server)
-  EXTERNAL_AI_API_URL: 'https://aiart-zroo.onrender.com/api/generate',
-  
+  API_BASE_URL: window.location.hostname === 'localhost'
+    ? 'http://localhost:3000'
+    : import.meta.env.VITE_API_URL,
+
   // Default generation parameters
   DEFAULT_PARAMS: {
-    negative_prompt: "blurry, low quality, distorted faces, poor lighting, extra limbs, deformed, ugly, bad anatomy",
-    style_preset: "neon-punk",
+    negative_prompt: "blurry, low quality, distorted, poor lighting, bad anatomy",
+    style_preset: "cinematic",
     aspect_ratio: "16:9",
     output_format: "png",
     seed: 0
   }
-}; 
+};
