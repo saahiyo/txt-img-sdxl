@@ -125,31 +125,34 @@ function App() {
     }
   };
 
-  // Download image
   const downloadImage = async () => {
     if (!generatedImage) return;
+  
     try {
-      // Use the backend proxy to avoid CORS issues
-      const proxyUrl = `/api/download-image?url=${encodeURIComponent(generatedImage)}`;
-      const response = await fetch(proxyUrl);
-      if (!response.ok) {
-        throw new Error('Failed to fetch image');
-      }
+      // Fetch the image data
+      const response = await fetch(generatedImage, { mode: 'cors' });
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const url = URL.createObjectURL(blob);
+  
+      // Create a temporary anchor element to trigger download
       const a = document.createElement('a');
       a.href = url;
       a.download = `generated-image-${Date.now()}.png`;
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+  
+      // Clean up the blob URL
+      URL.revokeObjectURL(url);
+  
       showToastMessage('Image downloaded!');
-    } catch (err) {
-      console.error('Download error:', err);
-      showToastMessage('Failed to download image');
+    } catch (error) {
+      console.error('Download failed:', error);
+      showToastMessage('Failed to download image!');
     }
   };
+  
+  
 
   // Toggle fullscreen view
   const toggleFullscreen = () => {
