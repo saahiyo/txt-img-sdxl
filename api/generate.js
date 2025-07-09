@@ -14,58 +14,9 @@ function logToFile(filePath, entry) {
     }
   } catch (e) { arr = []; }
   arr.unshift(entry);
-  fs.writeFileSync(filePath, JSON.stringify(arr.slice(0, 1000), null, 2)); // keep last 1000
 }
 
 export default async function handler(req, res) {
-  // --- ADMIN ENDPOINTS ---
-  if (req.method === 'GET') {
-    if (req.url.endsWith('/api/admin/generations')) {
-      try {
-        const data = fs.existsSync(GENERATIONS_PATH) ? JSON.parse(fs.readFileSync(GENERATIONS_PATH, 'utf8')) : [];
-        res.status(200).json(data);
-      } catch (e) {
-        res.status(500).json({ error: 'Failed to read generations log' });
-      }
-      return;
-    }
-    if (req.url.endsWith('/api/admin/errors')) {
-      try {
-        const data = fs.existsSync(ERRORS_PATH) ? JSON.parse(fs.readFileSync(ERRORS_PATH, 'utf8')) : [];
-        res.status(200).json(data);
-      } catch (e) {
-        res.status(500).json({ error: 'Failed to read errors log' });
-      }
-      return;
-    }
-    if (req.url.endsWith('/api/admin/stats')) {
-      // Simple stats: total generations, total errors
-      const generations = fs.existsSync(GENERATIONS_PATH) ? JSON.parse(fs.readFileSync(GENERATIONS_PATH, 'utf8')) : [];
-      const errors = fs.existsSync(ERRORS_PATH) ? JSON.parse(fs.readFileSync(ERRORS_PATH, 'utf8')) : [];
-      res.status(200).json({
-        totalGenerations: generations.length,
-        totalErrors: errors.length,
-        lastGeneration: generations[0] || null,
-        lastError: errors[0] || null
-      });
-      return;
-    }
-    if (req.url.endsWith('/api/admin/config')) {
-      // Mock config summary (customize as needed)
-      res.status(200).json({
-        API_BASE_URL: process.env.VITE_API_URL || 'http://localhost:3000',
-        DEFAULT_PARAMS: {
-          negative_prompt: "blurry, low quality, distorted faces, poor lighting, extra limbs, deformed, ugly, bad anatomy",
-          style_preset: "neon-punk",
-          aspect_ratio: "16:9",
-          output_format: "png",
-          seed: 0
-        }
-      });
-      return;
-    }
-  }
-
   // --- GENERATE ENDPOINT ---
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });

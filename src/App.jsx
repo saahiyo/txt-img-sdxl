@@ -4,7 +4,7 @@ import InfoModal from './components/InfoModal';
 import ImagePlaceholder from './components/ImagePlaceholder';
 import ErrorDisplay from './components/ErrorDisplay';
 import { GenerateIcon, CopyIcon, DownloadIcon, ViewIcon, CloseIcon, Spinner } from './components/Icons';
-import AdminPanel from './components/AdminPanel';
+// Removed: import AdminPanel from './components/AdminPanel';
 
 // --- Main App Component ---
 
@@ -26,7 +26,7 @@ function App() {
   const [generatedImageData, setGeneratedImageData] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
   const [showInfoPage, setShowInfoPage] = useState(false);
-  const [showAdmin, setShowAdmin] = useState(false);
+  // Removed: const [showAdmin, setShowAdmin] = useState(false);
 
   // API endpoint from your server.js configuration
   const API_URL = `${config.API_BASE_URL}/api/generate`;
@@ -152,34 +152,8 @@ function App() {
         <span>i</span>
         <span className="hidden sm:inline">Info</span>
       </button>
-      {/* Admin Panel Button */}
-      <button
-        className="fixed top-4 right-24 z-50 md3-chip flex items-center gap-2 bg-[var(--md3-surface)] border border-[var(--md3-primary)] hover:bg-[var(--md3-primary)] hover:text-white transition-colors shadow-md"
-        style={{ fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', letterSpacing: '0.01em' }}
-        onClick={() => setShowAdmin(true)}
-        title="Admin Panel"
-        aria-label="Admin Panel"
-        type="button"
-      >
-        <span>Admin</span>
-      </button>
-      {/* Admin Panel Modal */}
-      {showAdmin && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="absolute inset-0" onClick={() => setShowAdmin(false)} tabIndex={-1} aria-label="Close admin overlay" />
-          <div className="relative w-full max-w-5xl mx-auto bg-white dark:bg-[var(--md3-surface)] rounded-2xl shadow-2xl overflow-hidden animate-scale-fade-in">
-            <AdminPanel />
-            <button
-              onClick={() => setShowAdmin(false)}
-              className="absolute top-4 right-4 md3-btn-icon bg-black/10 hover:bg-black/20"
-              title="Close Admin Panel"
-              aria-label="Close Admin Panel"
-            >
-              <CloseIcon />
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Removed: Admin Panel Button */}
+      {/* Removed: Admin Panel Modal */}
       {/* Info Fullscreen Page */}
       <InfoModal show={showInfoPage} onClose={() => setShowInfoPage(false)} />
       {/* --- Controls Sidebar --- */}
