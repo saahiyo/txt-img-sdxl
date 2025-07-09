@@ -26,6 +26,9 @@ const InfoModal = ({ show, onClose }) => {
           <div className="text-xs break-all mb-2 text-gray-500 dark:text-[var(--md3-secondary)] text-center">Project Repo:<br/>
             <a href="https://github.com/saahiyo/txt-img-sdxl" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">github.com/saahiyo/txt-img-sdxl</a>
           </div>
+          <div className="mt-2 text-xs text-blue-500 dark:text-[var(--md3-secondary)] text-center">
+            Powered by <a href="https://aiart-zroo.onrender.com/api-docs" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">aiart-zroo.onrender.com</a>
+          </div>
           <div className="mt-2 text-xs text-gray-400 dark:text-[var(--md3-secondary)] text-center">Stable Diffusion XL via Vercel serverless proxy.<br/>Made with <span className="text-pink-500">♥</span>.</div>
         </div>
       </div>

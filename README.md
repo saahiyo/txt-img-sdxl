@@ -2,6 +2,8 @@
 
 A modern React application for generating AI images using Stable Diffusion XL (SDXL 3.5 Ultra) via Vercel serverless functions. The backend securely relays requests to an external AI image generation API.
 
+> **API powered by [aiart-zroo.onrender.com](https://aiart-zroo.onrender.com/api-docs)**
+
 ## Features
 
 - Text-to-image generation using Stable Diffusion XL (SDXL 3.5 Ultra)
@@ -11,6 +13,7 @@ A modern React application for generating AI images using Stable Diffusion XL (S
 - Real-time image generation with loading and error states
 - Download and fullscreen view for generated images
 - **Vercel serverless backend** handles CORS and proxies requests to the external API
+- **Image generation API powered by [aiart-zroo.onrender.com](https://aiart-zroo.onrender.com/api-docs)**
 
 ## Prerequisites
 
@@ -88,6 +91,7 @@ vercel dev
 
 - The React frontend collects user input and sends a POST request to `/api/generate` (handled by Vercel serverless function).
 - The serverless function validates the input, applies defaults, and proxies the request to the external AI API (`https://aiart-zroo.onrender.com/api/generate`).
+- **All image generation is powered by [aiart-zroo.onrender.com](https://aiart-zroo.onrender.com/api-docs).**
 - The function relays the image URL or error message back to the frontend.
 - The frontend displays the image, handles errors, and provides download/fullscreen options.
 
