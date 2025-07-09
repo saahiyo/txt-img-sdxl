@@ -1,5 +1,49 @@
 [
   {
+    "timestamp": "2025-07-09T06:21:10.108Z",
+    "prompt": "a lone house in mountains",
+    "negative_prompt": "blurry, low quality, distorted, poor lighting, bad anatomy",
+    "style_preset": "cinematic",
+    "aspect_ratio": "16:9",
+    "output_format": "png",
+    "seed": 0,
+    "image_url": "https://aiart-zroo.onrender.com/images/sd_ultra_a_lone_house_in_mountains_2985109707.png",
+    "success": true
+  },
+  {
+    "timestamp": "2025-07-09T06:19:58.931Z",
+    "prompt": "a box , amazon",
+    "negative_prompt": "blurry, low quality, distorted, poor lighting, bad anatomy",
+    "style_preset": "cinematic",
+    "aspect_ratio": "16:9",
+    "output_format": "png",
+    "seed": 0,
+    "image_url": "https://aiart-zroo.onrender.com/images/sd_ultra_a_box___amazon_52822792.png",
+    "success": true
+  },
+  {
+    "timestamp": "2025-07-09T06:11:49.915Z",
+    "prompt": "a box",
+    "negative_prompt": "blurry, low quality, distorted, poor lighting, bad anatomy",
+    "style_preset": "cinematic",
+    "aspect_ratio": "16:9",
+    "output_format": "png",
+    "seed": 0,
+    "image_url": "https://aiart-zroo.onrender.com/images/sd_ultra_a_box_3108406518.png",
+    "success": true
+  },
+  {
+    "timestamp": "2025-07-09T06:11:15.756Z",
+    "prompt": "a man in hoodie",
+    "negative_prompt": "blurry, low quality, distorted, poor lighting, bad anatomy",
+    "style_preset": "cinematic",
+    "aspect_ratio": "16:9",
+    "output_format": "png",
+    "seed": 0,
+    "image_url": "https://aiart-zroo.onrender.com/images/sd_ultra_a_man_in_hoodie_1421612892.png",
+    "success": true
+  },
+  {
     "timestamp": "2025-07-08T10:32:18.070Z",
     "prompt": "a cool mask hero",
     "negative_prompt": "blurry, low quality, distorted, poor lighting, bad anatomy",
