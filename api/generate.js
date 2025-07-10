@@ -1,26 +1,12 @@
 import fetch from 'node-fetch';
-import fs from 'fs';
-import path from 'path';
 import { Redis } from '@upstash/redis';
 
 const EXTERNAL_AI_API_URL = 'https://aiart-zroo.onrender.com/api/generate';
-const ERRORS_PATH = path.resolve(process.cwd(), 'api/errors.json');
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
-
-function logToFile(filePath, entry) {
-  let arr = [];
-  try {
-    if (fs.existsSync(filePath)) {
-      arr = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    }
-  } catch (e) { arr = []; }
-  arr.unshift(entry);
-  fs.writeFileSync(filePath, JSON.stringify(arr, null, 2), 'utf8');
-}
 
 export default async function handler(req, res) {
   // --- GENERATE ENDPOINT ---
@@ -56,13 +42,13 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      // Log error (keep using file for errors, or migrate to Redis if needed)
-      logToFile(ERRORS_PATH, {
+      // Log error to Upstash Redis
+      await redis.lpush('generation_errors', JSON.stringify({
         timestamp,
         status: response.status,
         error: errorData.detail || `External API error: ${response.status}`,
         payload
-      });
+      }));
       res.status(response.status).json({
         error: errorData.detail || `External API error: ${response.status}`,
         status: response.status
@@ -85,13 +71,13 @@ export default async function handler(req, res) {
     }));
     res.status(200).json(result);
   } catch (error) {
-    // Log error
-    logToFile(ERRORS_PATH, {
+    // Log error to Upstash Redis
+    await redis.lpush('generation_errors', JSON.stringify({
       timestamp: new Date().toISOString(),
       status: 500,
       error: error.message,
       payload: req.body
-    });
+    }));
     res.status(500).json({
       error: 'Internal server error',
       message: error.message
