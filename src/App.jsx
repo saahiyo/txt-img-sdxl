@@ -29,7 +29,7 @@ function App() {
   // Removed: const [showAdmin, setShowAdmin] = useState(false);
 
   // API endpoint from your server.js configuration
-  const API_URL = `https://diffusion-gen.vercel.app/api/generate`;
+  const API_URL = `${config.API_BASE_URL}/api/generate`;
 
   // List of available style presets for the dropdown
   const stylePresets = [
