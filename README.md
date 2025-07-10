@@ -70,6 +70,7 @@ vercel dev
 
 - `GET /api/health` - Health check endpoint
 - `POST /api/generate` - Image generation endpoint
+- `GET /api/user-history` - Returns the last 20 image generations (from Upstash Redis)
 
 ### `/api/generate` Payload
 ```
@@ -86,6 +87,54 @@ vercel dev
 ### Response
 - On success: `{ success: true, direct_url: "..." }` (or `image_url`)
 - On error: `{ error: "..." }`
+
+### `/api/user-history` Response
+Returns the last 20 generations as an array of objects:
+```json
+{
+  "history": [
+    {
+      "timestamp": "2025-07-10T18:12:19.351Z",
+      "prompt": "a magic box",
+      "negative_prompt": "blurry, low quality, ...",
+      "style_preset": "isometric",
+      "aspect_ratio": "1:1",
+      "output_format": "png",
+      "seed": 0,
+      "image_url": "https://...",
+      "success": true
+    },
+    ...
+  ]
+}
+```
+
+## User History & Upstash Redis
+
+This project uses [Upstash Redis](https://upstash.com/) to store and retrieve image generation history and errors. This allows the backend to work on Vercel (which does not support file writes).
+
+### Environment Variables
+Add these to your Vercel project or `.env` file:
+
+```
+UPSTASH_REDIS_REST_URL=your-upstash-redis-url
+UPSTASH_REDIS_REST_TOKEN=your-upstash-redis-token
+```
+
+### How History Works
+- Every time an image is generated, the details are pushed to a Redis list (`generations`).
+- The `/api/user-history` endpoint fetches the last 20 generations for display in the frontend or for API use.
+- Errors are also logged to Redis (`generation_errors` list).
+
+### Using History in the Frontend
+Fetch `/api/user-history` and use the `history` array to display recent generations.
+
+Example fetch:
+```js
+const res = await fetch('/api/user-history');
+const data = await res.json();
+console.log(data.history); // Array of generation objects
+```
 
 ## How It Works
 
@@ -119,7 +168,7 @@ txt-img-sdxl/
 ## Technologies Used
 
 - **Frontend:** React, Vite, Tailwind CSS
-- **Backend:** Vercel serverless functions, node-fetch
+- **Backend:** Vercel serverless functions, node-fetch, Upstash Redis (serverless data storage)
 - **API:** External AI image generation service (proxied)
 
 ## Troubleshooting

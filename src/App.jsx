@@ -152,8 +152,6 @@ function App() {
         <span>i</span>
         <span className="hidden sm:inline">Info</span>
       </button>
-      {/* Removed: Admin Panel Button */}
-      {/* Removed: Admin Panel Modal */}
       {/* Info Fullscreen Page */}
       <InfoModal show={showInfoPage} onClose={() => setShowInfoPage(false)} />
       {/* --- Controls Sidebar --- */}
@@ -164,7 +162,7 @@ function App() {
         </header>
 
         {/* --- Form Controls --- */}
-        <div className="space-y-6 flex-1">
+        <div className="space-y-5 flex-1">
           {/* Prompt Input */}
           <div>
             <label htmlFor="prompt" className="md3-label">Prompt</label>
@@ -173,7 +171,7 @@ function App() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="e.g., A futuristic cityscape at sunset, neon lights reflecting on wet streets"
-              className="w-full h-20 md3-input scrollbar-hide"
+              className="w-full h-20 md3-input scrollbar-hide mt-1"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             />
           </div>
@@ -186,7 +184,7 @@ function App() {
               value={negativePrompt}
               onChange={(e) => setNegativePrompt(e.target.value)}
               placeholder="Things to avoid in the image"
-              className="w-full h-14 md3-input scrollbar-hide"
+              className="w-full h-17 md3-input scrollbar-hide mt-1"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             />
           </div>
@@ -198,7 +196,7 @@ function App() {
               id="style-preset"
               value={stylePreset}
               onChange={(e) => setStylePreset(e.target.value)}
-              className="w-full md3-input"
+              className="w-full md3-input mt-1"
             >
               {stylePresets.map(style => <option key={style} value={style}>{style.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>)}
             </select>
@@ -207,7 +205,7 @@ function App() {
           {/* Aspect Ratio Selection */}
           <div>
             <label className="md3-label mb-2 ">Aspect Ratio</label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mt-1">
               {aspectRatios.map(ratio => (
                 <button
                   key={ratio}
