@@ -1,10 +1,15 @@
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
+import { Redis } from '@upstash/redis';
 
 const EXTERNAL_AI_API_URL = 'https://aiart-zroo.onrender.com/api/generate';
-const GENERATIONS_PATH = path.resolve(process.cwd(), 'api/generations.json');
 const ERRORS_PATH = path.resolve(process.cwd(), 'api/errors.json');
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
 
 function logToFile(filePath, entry) {
   let arr = [];
@@ -14,6 +19,7 @@ function logToFile(filePath, entry) {
     }
   } catch (e) { arr = []; }
   arr.unshift(entry);
+  fs.writeFileSync(filePath, JSON.stringify(arr, null, 2), 'utf8');
 }
 
 export default async function handler(req, res) {
@@ -50,7 +56,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      // Log error
+      // Log error (keep using file for errors, or migrate to Redis if needed)
       logToFile(ERRORS_PATH, {
         timestamp,
         status: response.status,
@@ -65,8 +71,8 @@ export default async function handler(req, res) {
     }
 
     const result = await response.json();
-    // Log generation
-    logToFile(GENERATIONS_PATH, {
+    // Log generation to Upstash Redis
+    await redis.lpush('generations', JSON.stringify({
       timestamp,
       prompt: video_description,
       negative_prompt: payload.negative_prompt,
@@ -76,7 +82,7 @@ export default async function handler(req, res) {
       seed: payload.seed,
       image_url: result.direct_url || result.image_url || null,
       success: result.success || false
-    });
+    }));
     res.status(200).json(result);
   } catch (error) {
     // Log error
