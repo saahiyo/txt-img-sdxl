@@ -3,7 +3,7 @@ export const config = {
   // API Configuration
   API_BASE_URL: window.location.hostname === 'localhost'
     ? 'http://localhost:3000'
-    : import.meta.env.VITE_API_URL,
+    : import.meta.env.API_URL,
 
   // Default generation parameters
   DEFAULT_PARAMS: {
