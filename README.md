@@ -4,7 +4,7 @@ A modern React application for generating AI images using Stable Diffusion XL (S
 
 > **API powered by [aiart-zroo.onrender.com](https://aiart-zroo.onrender.com/api-docs)**
 
-## Features
+## Features.
 
 - Text-to-image generation using Stable Diffusion XL (SDXL 3.5 Ultra)
 - Choose from multiple style presets and aspect ratios
