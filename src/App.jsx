@@ -30,6 +30,8 @@ function App() {
 
   // API endpoint from your server.js configuration
   const API_URL = `${config.API_BASE_URL}/api/generate`;
+  console.log(API_URL);
+  
 
   // List of available style presets for the dropdown
   const stylePresets = [
