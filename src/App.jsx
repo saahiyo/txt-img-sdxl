@@ -259,7 +259,7 @@ function App() {
                   </button>
                   {generatedImage && (
                     <a
-                      href={generatedImage}
+                      href={`/api/proxy-image?url=${encodeURIComponent(generatedImage)}`}
                       download={`generated-image-${Date.now()}.png`}
                       className="md3-btn-icon"
                       title="Download Image"
