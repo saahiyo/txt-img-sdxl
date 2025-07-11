@@ -1,3 +1,5 @@
+import { Readable } from 'node:stream';
+
 export default async function handler(req, res) {
   // 1) Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -36,8 +38,9 @@ export default async function handler(req, res) {
     );
     res.setHeader('Cache-Control', 'public, max-age=3600');
 
-    // 6) Stream the raw image bytes through to the client
-    response.body.pipe(res);
+    // 6) Convert web ReadableStream to Node stream
+    const nodeStream = Readable.fromWeb(response.body);
+    nodeStream.pipe(res);
   } catch (e) {
     console.error('Proxy error:', e);
     res.status(500).json({ error: 'Internal server error' });
