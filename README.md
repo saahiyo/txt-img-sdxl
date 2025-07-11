@@ -54,7 +54,7 @@ vercel dev
 
 ## Usage
 
-1. Open your browser and navigate to `http://localhost:5173`
+1. Open your browser and navigate to `http://localhost:3000`
 2. Enter a description of the image you want to generate (Prompt)
 3. (Optional) Adjust the Negative Prompt, Style Preset, and Aspect Ratio
 4. Click "Generate Image" and wait for the AI to create your image
