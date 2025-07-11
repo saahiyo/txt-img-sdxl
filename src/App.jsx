@@ -26,7 +26,6 @@ function App() {
   const [generatedImageData, setGeneratedImageData] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
   const [showInfoPage, setShowInfoPage] = useState(false);
-  // Removed: const [showAdmin, setShowAdmin] = useState(false);
 
   // API endpoint
   const API_URL = `${config.API_BASE_URL ?? 'https://diffusion-gen.vercel.app'}/api/generate`;
@@ -42,6 +41,29 @@ function App() {
 
   // List of available aspect ratios
   const aspectRatios = ["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16"];
+
+  // Function to format bytes to KB/MB
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Function to get image size
+  const getImageSize = async (imageUrl) => {
+    try {
+      // Use your proxy endpoint
+      const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`;
+      const response = await fetch(proxyUrl);
+      const blob = await response.blob();
+      return formatBytes(blob.size);
+    } catch (error) {
+      console.error('Error getting image size:', error);
+      return 'N/A';
+    }
+  };
 
   // Show toast message
   const showToastMessage = (message) => {
@@ -115,13 +137,19 @@ function App() {
       // The backend returns a URL to the generated image
       if (result.success && (result.direct_url || result.image_url)) {
         // Use direct_url if available, otherwise fall back to image_url
-        setGeneratedImage(result.direct_url || result.image_url);
+        const imageUrl = result.direct_url || result.image_url;
+        setGeneratedImage(imageUrl);
+        
+        // Get image size
+        const imageSize = await getImageSize(imageUrl);
+        
         // Store the generation parameters for this specific image
         setGeneratedImageData({
           prompt: prompt,
           negativePrompt: negativePrompt,
           stylePreset: stylePreset,
           aspectRatio: aspectRatio,
+          imageSize: imageSize,
           timestamp: new Date().toISOString()
         });
       } else {
@@ -284,6 +312,9 @@ function App() {
                   </div>
                   <div className="md3-chip">
                     <span className="text-xs font-medium">Ratio: {generatedImageData?.aspectRatio || 'N/A'}</span>
+                  </div>
+                  <div className="md3-chip">
+                    <span className="text-xs font-medium">Size: {generatedImageData?.imageSize || 'N/A'}</span>
                   </div>
                   <div className="md3-chip">
                     <span className="text-xs font-medium">SD 3.5 Ultra</span>
