@@ -181,7 +181,7 @@ function App() {
         type="button"
       >
         <span>i</span>
-        <span className="hidden sm:inline">Info</span>
+        <span className="hidden sm:inline"> Info</span>
       </button>
       {/* Info Fullscreen Page */}
       <InfoModal show={showInfoPage} onClose={() => setShowInfoPage(false)} />
@@ -291,18 +291,19 @@ function App() {
               <div className="flex items-center mt-4 p-4 max-w-4xl mx-auto gap-3">
                 <button
                   onClick={() => setShowImageDetails(true)}
-                  className="md3-btn-icon bg-black bg-opacity-50 hover:bg-opacity-70 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
-                  title="Image Details"
+                  className="md3-btn-icon bg-black group relative bg-opacity-50 hover:bg-opacity-70 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
                 >
                   <span className="text-white font-bold text-base sm:text-xl">i</span>
+                  <span className="absolute bottom-full bottom-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      image details
+                    </span>
                 </button>
                 <button
                   onClick={copyPrompt}
                   className="md3-btn-icon group relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
-                  title="Copy Prompt"
                 >
                   <span className="text-base sm:text-xl"><CopyIcon /></span>
-                  <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <span className="absolute bottom-full bottom-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                     Copy Prompt
                   </span>
                 </button>
@@ -311,10 +312,9 @@ function App() {
                     href={`/api/proxy-image?url=${encodeURIComponent(generatedImage)}`}
                     download={`generated-image-${Date.now()}.png`}
                     className="md3-btn-icon group relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
-                    title="Download Image"
                   >
                     <span className="text-base sm:text-xl"><DownloadIcon /></span>
-                    <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    <span className="absolute bottom-full bottom-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                       Download
                     </span>
                   </a>
@@ -322,10 +322,9 @@ function App() {
                 <button
                   onClick={toggleFullscreen}
                   className="md3-btn-icon group relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
-                  title={isFullscreen ? "Exit Fullscreen" : "View Fullscreen"}
                 >
                   <span className="text-base sm:text-xl">{isFullscreen ? <CloseIcon /> : <ViewIcon />}</span>
-                  <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <span className="absolute bottom-full bottom-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                     {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
                   </span>
                 </button>
