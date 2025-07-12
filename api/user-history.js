@@ -1,9 +1,16 @@
 import { Redis } from '@upstash/redis';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+// Initialize Redis lazily to ensure environment variables are loaded
+let redis = null;
+function getRedis() {
+  if (!redis) {
+    redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+  }
+  return redis;
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -12,7 +19,7 @@ export default async function handler(req, res) {
   }
   try {
     // Get the last 20 generations from Redis
-    const items = await redis.lrange('generations', 0, 19);
+    const items = await getRedis().lrange('generations', 0, 19);
     // Format: ensure each item is a well-structured object with user information
     const history = items.map(item => {
       if (typeof item === 'string') {
