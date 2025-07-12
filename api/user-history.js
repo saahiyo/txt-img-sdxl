@@ -13,17 +13,30 @@ export default async function handler(req, res) {
   try {
     // Get the last 20 generations from Redis
     const items = await redis.lrange('generations', 0, 19);
-    // Format: ensure each item is a well-structured object
+    // Format: ensure each item is a well-structured object with user information
     const history = items.map(item => {
       if (typeof item === 'string') {
         try {
-          return JSON.parse(item);
+          const parsed = JSON.parse(item);
+          // Ensure all user information fields are present (for backward compatibility)
+          return {
+            ...parsed,
+            userIP: parsed.userIP || 'unknown',
+            userAgent: parsed.userAgent || 'unknown',
+            deviceType: parsed.deviceType || 'unknown'
+          };
         } catch {
           return null;
         }
       }
       if (typeof item === 'object' && item !== null) {
-        return item;
+        // Ensure all user information fields are present (for backward compatibility)
+        return {
+          ...item,
+          userIP: item.userIP || 'unknown',
+          userAgent: item.userAgent || 'unknown',
+          deviceType: item.deviceType || 'unknown'
+        };
       }
       return null;
     }).filter(Boolean);
