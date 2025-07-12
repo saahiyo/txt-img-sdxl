@@ -3,10 +3,17 @@ import { Redis } from '@upstash/redis';
 
 const EXTERNAL_AI_API_URL = 'https://aiart-zroo.onrender.com/api/generate';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+// Initialize Redis lazily to ensure environment variables are loaded
+let redis = null;
+function getRedis() {
+  if (!redis) {
+    redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+  }
+  return redis;
+}
 
 // Helper function to get user IP address
 function getUserIP(req) {
@@ -72,7 +79,7 @@ export default async function handler(req, res) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       // Log error to Upstash Redis
-      await redis.lpush('generation_errors', JSON.stringify({
+      await getRedis().lpush('generation_errors', JSON.stringify({
         timestamp,
         status: response.status,
         error: errorData.detail || `External API error: ${response.status}`,
@@ -90,7 +97,7 @@ export default async function handler(req, res) {
 
     const result = await response.json();
     // Log generation to Upstash Redis
-    await redis.lpush('generations', JSON.stringify({
+    await getRedis().lpush('generations', JSON.stringify({
       timestamp,
       prompt: video_description,
       negative_prompt: payload.negative_prompt,
