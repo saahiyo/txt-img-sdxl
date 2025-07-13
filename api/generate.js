@@ -67,7 +67,7 @@ export default async function handler(req, res) {
       body: JSON.stringify(payload)
     });
 
-    const timestamp = new Date().toISOString();
+    const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -108,7 +108,7 @@ export default async function handler(req, res) {
   } catch (error) {
     // Log error to Upstash Redis
     await redis.lpush('generation_errors', JSON.stringify({
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
       status: 500,
       error: error.message,
       payload: req.body,

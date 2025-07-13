@@ -152,7 +152,7 @@ function App() {
           stylePreset: stylePreset,
           aspectRatio: aspectRatio,
           imageSize: imageSize,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
         });
       } else {
         // Handle cases where the API call was "ok" but didn't succeed logically
