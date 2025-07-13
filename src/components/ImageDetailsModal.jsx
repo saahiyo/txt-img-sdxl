@@ -53,7 +53,7 @@ const ImageDetailsModal = ({ show, onClose, imageData }) => {
             <div className="mt-4">
               <label className="text-sm font-medium text-gray-700 dark:text-[var(--md3-secondary)]">Generated:</label>
               <div className="mt-1 text-sm text-gray-600 dark:text-[var(--md3-secondary)]">
-                {new Date(imageData.timestamp).toLocaleString()}
+               {imageData.timestamp}
               </div>
             </div>
           </div>
