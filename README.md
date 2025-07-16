@@ -14,6 +14,7 @@ A modern React application for generating AI images using Stable Diffusion XL (S
 - Download and fullscreen view for generated images
 - **Vercel serverless backend** handles CORS and proxies requests to the external API
 - **Image generation API powered by [aiart-zroo.onrender.com](https://aiart-zroo.onrender.com/api-docs)**
+- **Images are stored in Vercel Blob storage for secure, scalable hosting**
 
 ## Prerequisites
 
@@ -101,7 +102,7 @@ Returns the last 20 generations as an array of objects:
       "aspect_ratio": "1:1",
       "output_format": "png",
       "seed": 0,
-      "image_url": "https://...",
+      "image_url": "https://...", // Now a Vercel Blob URL
       "success": true
     },
     ...
@@ -119,6 +120,8 @@ Add these to your Vercel project or `.env` file:
 ```
 UPSTASH_REDIS_REST_URL=your-upstash-redis-url
 UPSTASH_REDIS_REST_TOKEN=your-upstash-redis-token
+BLOB_STORE_ID=your-vercel-blob-store-id
+BLOB_READ_WRITE_TOKEN=your-vercel-blob-read-write-token
 ```
 
 ### How History Works
@@ -136,11 +139,32 @@ const data = await res.json();
 console.log(data.history); // Array of generation objects
 ```
 
+## Vercel Blob Storage for Generated Images
+
+This project uses [Vercel Blob](https://vercel.com/docs/storage/vercel-blob) to store all generated images securely and scalably. When an image is generated:
+
+- The backend downloads the image from the external API.
+- It uploads the image to your Vercel Blob store using the credentials in your `.env`.
+- The image is saved with a filename like `diffusion-gen-TIMESTAMP.png`.
+- The resulting Blob URL is stored in Redis and returned to the frontend as `image_url` and `direct_url`.
+- You can view and manage your blobs in the [Vercel dashboard](https://vercel.com/storage/blob).
+
+**Required Environment Variables:**
+- `BLOB_STORE_ID` — Your Vercel Blob store ID (see Vercel dashboard)
+- `BLOB_READ_WRITE_TOKEN` — Your Vercel Blob read/write token
+
+**You do NOT need to reference these variables in your frontend code.** The backend/serverless function will use them automatically via the `@vercel/blob` SDK.
+
+**Example Blob URL:**
+```
+https://<your-store-id>.public.blob.vercel-storage.com/diffusion-gen-1718031234567.png
+```
+
 ## How It Works
 
 - The React frontend collects user input and sends a POST request to `/api/generate` (handled by Vercel serverless function).
 - The serverless function validates the input, applies defaults, and proxies the request to the external AI API (`https://aiart-zroo.onrender.com/api/generate`).
-- **All image generation is powered by [aiart-zroo.onrender.com](https://aiart-zroo.onrender.com/api-docs).**
+- The backend downloads the generated image, uploads it to Vercel Blob, and returns the Blob URL.
 - The function relays the image URL or error message back to the frontend.
 - The frontend displays the image, handles errors, and provides download/fullscreen options.
 
@@ -148,6 +172,7 @@ console.log(data.history); // Array of generation objects
 
 - If required fields are missing, the function returns a 400 error.
 - If the external API fails, the function relays the error and status code.
+- If the Blob upload fails, the function returns a 500 error.
 - The frontend displays user-friendly error messages and loading states.
 
 ## Project Structure
@@ -168,7 +193,7 @@ txt-img-sdxl/
 ## Technologies Used
 
 - **Frontend:** React, Vite, Tailwind CSS
-- **Backend:** Vercel serverless functions, node-fetch, Upstash Redis (serverless data storage)
+- **Backend:** Vercel serverless functions, node-fetch, Upstash Redis (serverless data storage), Vercel Blob
 - **API:** External AI image generation service (proxied)
 
 ## Troubleshooting
@@ -177,6 +202,7 @@ txt-img-sdxl/
 - Check the browser console for any error messages
 - Ensure both frontend and API are running simultaneously (with `npm run dev` and `vercel dev`)
 - If the external AI API is down, check the function logs for error details
+- If image uploads fail, check your Blob credentials and Vercel dashboard
 
 ## Configuration
 

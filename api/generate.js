@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { Redis } from '@upstash/redis';
+import { put } from '@vercel/blob';
 
 const EXTERNAL_AI_API_URL = 'https://aiart-zroo.onrender.com/api/generate';
 
@@ -89,6 +90,38 @@ export default async function handler(req, res) {
     }
 
     const result = await response.json();
+    // --- Upload to Vercel Blob ---
+    let blobUrl = null;
+    if (result.success && (result.direct_url || result.image_url)) {
+      const imageUrl = result.direct_url || result.image_url;
+      try {
+        const imageResponse = await fetch(imageUrl);
+        const imageBuffer = await imageResponse.arrayBuffer();
+        const filename = `diffusion-gen-${Date.now()}.png`;
+        const blob = await put(
+          filename,
+          Buffer.from(imageBuffer),
+          { access: 'public' }
+        );
+        blobUrl = blob.url;
+      } catch (err) {
+        // Log error to Upstash Redis
+        await redis.lpush('generation_errors', JSON.stringify({
+          timestamp,
+          status: 500,
+          error: 'Failed to upload image to Vercel Blob: ' + err.message,
+          payload,
+          userIP,
+          userAgent,
+          deviceType
+        }));
+        res.status(500).json({
+          error: 'Failed to upload image to Vercel Blob',
+          message: err.message
+        });
+        return;
+      }
+    }
     // Log generation to Upstash Redis
     await redis.lpush('generations', JSON.stringify({
       timestamp,
@@ -98,13 +131,18 @@ export default async function handler(req, res) {
       aspect_ratio: payload.aspect_ratio,
       output_format: payload.output_format,
       seed: payload.seed,
-      image_url: result.direct_url || result.image_url || null,
+      image_url: blobUrl,
       success: result.success || false,
       userIP,
       userAgent,
       deviceType
     }));
-    res.status(200).json(result);
+    // Return the same result as before, but replace direct_url/image_url with blobUrl
+    res.status(200).json({
+      ...result,
+      direct_url: blobUrl,
+      image_url: blobUrl
+    });
   } catch (error) {
     // Log error to Upstash Redis
     await redis.lpush('generation_errors', JSON.stringify({
