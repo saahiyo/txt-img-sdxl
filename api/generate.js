@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import { Redis } from '@upstash/redis';
 import { put } from '@vercel/blob';
 import sharp from 'sharp';
+import { getUserIP, getDeviceType } from './utils.js';
 
 const EXTERNAL_AI_API_URL = 'https://aiart-zroo.onrender.com/api/generate';
 
@@ -9,30 +10,6 @@ const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
-
-// Helper function to get user IP address
-function getUserIP(req) {
-  return req.headers['x-forwarded-for'] || 
-         req.headers['x-real-ip'] || 
-         req.connection?.remoteAddress || 
-         req.socket?.remoteAddress || 
-         'unknown';
-}
-
-// Helper function to detect device type from user agent
-function getDeviceType(userAgent) {
-  if (!userAgent) return 'unknown';
-  
-  const ua = userAgent.toLowerCase();
-  
-  if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone') || ua.includes('ipad')) {
-    return 'mobile';
-  } else if (ua.includes('tablet')) {
-    return 'tablet';
-  } else {
-    return 'desktop';
-  }
-}
 
 export default async function handler(req, res) {
   // --- GENERATE ENDPOINT ---

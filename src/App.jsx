@@ -7,6 +7,10 @@ import ErrorDisplay from './components/ErrorDisplay';
 import Toast from './components/Toast';
 import Loading from './components/Loading';
 import { GenerateIcon, CopyIcon, DownloadIcon, ViewIcon, CloseIcon } from './components/Icons';
+import SidebarControls from './components/SidebarControls';
+import ImageDisplay from './components/ImageDisplay';
+import FullscreenModal from './components/FullscreenModal';
+import InfoChip from './components/InfoChip';
 
 // --- Main App Component ---
 
@@ -171,17 +175,7 @@ function App() {
   return (
     <div className="min-h-screen bg-[var(--md3-bg)] text-[var(--md3-text)] font-sans flex flex-col md:flex-row">
       {/* Info Chip (always visible, top right) */}
-      <button
-        className="fixed top-4 right-4 z-50 md3-chip flex items-center gap-2 bg-[var(--md3-surface)] border border-[var(--md3-primary)] hover:bg-[var(--md3-primary)] hover:text-white transition-colors shadow-md"
-        style={{ fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', letterSpacing: '0.01em' }}
-        onClick={() => setShowInfoPage(true)}
-        title="About this project"
-        aria-label="About this project"
-        type="button"
-      >
-        <span>i</span>
-        <span className="hidden sm:inline"> Info</span>
-      </button>
+      <InfoChip onClick={() => setShowInfoPage(true)} />
       {/* Info Fullscreen Page */}
       <InfoModal show={showInfoPage} onClose={() => setShowInfoPage(false)} />
       {/* Image Details Modal */}
@@ -191,178 +185,45 @@ function App() {
         imageData={generatedImageData}
       />
       {/* --- Controls Sidebar --- */}
-      <aside className="w-full md:w-96 md3-surface p-4 space-y-4 flex-shrink-0 flex flex-col">
-        <header>
-          <h1 className="md3-section-title">SD 3.5 Ultra</h1>
-          <p className="text-[var(--md3-secondary)] mb-6">Text-to-Image Generator</p>
-        </header>
-
-        {/* --- Form Controls --- */}
-        <div className="space-y-5 flex-1">
-          {/* Prompt Input */}
-          <div>
-            <label htmlFor="prompt" className="md3-label">Prompt</label>
-            <textarea
-              id="prompt"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="e.g., A futuristic cityscape at sunset, neon lights reflecting on wet streets"
-              className="w-full h-20 md3-input scrollbar-hide mt-1"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            />
-          </div>
-
-          {/* Negative Prompt Input */}
-          <div>
-            <label htmlFor="negative-prompt" className="md3-label">Negative Prompt</label>
-            <textarea
-              id="negative-prompt"
-              value={negativePrompt}
-              onChange={(e) => setNegativePrompt(e.target.value)}
-              placeholder="Things to avoid in the image"
-              className="w-full h-17 md3-input scrollbar-hide mt-1"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            />
-          </div>
-
-          {/* Style Preset Dropdown */}
-          <div>
-            <label htmlFor="style-preset" className="md3-label">Style</label>
-            <select
-              id="style-preset"
-              value={stylePreset}
-              onChange={(e) => setStylePreset(e.target.value)}
-              className="w-full md3-input mt-1"
-            >
-              {stylePresets.map(style => <option key={style} value={style}>{style.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>)}
-            </select>
-          </div>
-
-          {/* Aspect Ratio Selection */}
-          <div>
-            <label className="md3-label mb-2 ">Aspect Ratio</label>
-            <div className="flex flex-wrap gap-2 mt-1">
-              {aspectRatios.map(ratio => (
-                <button
-                  key={ratio}
-                  type="button"
-                  onClick={() => setAspectRatio(ratio)}
-                  className={`md3-tab${aspectRatio === ratio ? ' selected' : ''}`}
-                >
-                  {ratio}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Generate Button */}
-        <button
-          onClick={handleGenerateImage}
-          disabled={isLoading}
-          className="md3-btn w-full flex items-center justify-center mt-3 disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          <GenerateIcon />
-          {isLoading ? 'Generating...' : 'Generate'}
-        </button>
-      </aside>
-
+      <SidebarControls
+        prompt={prompt}
+        setPrompt={setPrompt}
+        negativePrompt={negativePrompt}
+        setNegativePrompt={setNegativePrompt}
+        stylePreset={stylePreset}
+        setStylePreset={setStylePreset}
+        stylePresets={stylePresets}
+        aspectRatio={aspectRatio}
+        setAspectRatio={setAspectRatio}
+        aspectRatios={aspectRatios}
+        handleGenerateImage={handleGenerateImage}
+        isLoading={isLoading}
+      />
       {/* --- Main Content Area for Image Display --- */}
       <main className="flex-1 p-4 flex items-center justify-center bg-[var(--md3-bg)] ">
         <div className="w-full h-full max-w-5xl max-h-[70vh] flex flex-col items-center justify-center">
           {isLoading && <Loading />}
           {error && !isLoading && <ErrorDisplay message={error} />}
           {!isLoading && !error && generatedImage && (
-            <>
-              <div className="md3-card w-full h-full max-w-4xl max-h-full flex flex-col">
-                {/* Image Container */}
-                <div className="flex-1 flex items-center justify-center overflow-hidden rounded-lg">
-                  <img 
-                    src={generatedImage}
-                    alt="Generated by AI" 
-                    className="w-full h-full object-contain rounded-lg"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </div>
-              {/* Info Button and Action Buttons Panel - Below Image Card */}
-              <div className="flex items-center mt-4 p-4 max-w-4xl mx-auto gap-3">
-                <button
-                  onClick={() => setShowImageDetails(true)}
-                  className="md3-btn-icon bg-black group relative bg-opacity-50 hover:bg-opacity-70 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
-                >
-                  <span className="text-white font-bold text-base sm:text-xl">i</span>
-                  <span className="absolute bottom-full bottom-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      image details
-                    </span>
-                </button>
-                <button
-                  onClick={copyPrompt}
-                  className="md3-btn-icon group relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
-                >
-                  <span className="text-base sm:text-xl"><CopyIcon /></span>
-                  <span className="absolute bottom-full bottom-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    Copy Prompt
-                  </span>
-                </button>
-                {generatedImage && (
-                  <a
-                    href={`/api/proxy-image?url=${encodeURIComponent(generatedImage)}`}
-                    download={`generated-image-${Date.now()}.webp`}
-                    className="md3-btn-icon group relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
-                  >
-                    <span className="text-base sm:text-xl"><DownloadIcon /></span>
-                    <span className="absolute bottom-full bottom-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      Download
-                    </span>
-                  </a>
-                )}
-                <button
-                  onClick={toggleFullscreen}
-                  className="md3-btn-icon group relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
-                >
-                  <span className="text-base sm:text-xl">{isFullscreen ? <CloseIcon /> : <ViewIcon />}</span>
-                  <span className="absolute bottom-full bottom-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-                  </span>
-                </button>
-              </div>
-            </>
+            <ImageDisplay
+              generatedImage={generatedImage}
+              onShowImageDetails={() => setShowImageDetails(true)}
+              onCopyPrompt={copyPrompt}
+              onToggleFullscreen={toggleFullscreen}
+              isFullscreen={isFullscreen}
+              prompt={prompt}
+            />
           )}
           {!isLoading && !error && !generatedImage && <ImagePlaceholder />}
         </div>
       </main>
-
       {/* Fullscreen Modal */}
       {isFullscreen && generatedImage && (
-        <div
-          className="fixed inset-0 bg-opacity-90 z-50 flex items-center justify-center p-4 fullscreen-modal overflow-auto"
-          tabIndex={-1}
-          aria-modal="true"
-          role="dialog"
-        >
-          <div className="relative max-w-full max-h-full shadow-2xl rounded-xl bg-[var(--md3-surface)] p-2 overflow-hidden">
-            <img 
-              src={generatedImage} 
-              alt="Generated by AI" 
-              className="max-w-[100vw] max-h-[100vh] object-contain rounded-lg"
-              loading="lazy"
-              decoding="async"
-            />
-            <button
-              onClick={toggleFullscreen}
-              className="absolute top-4 right-4 md3-btn-icon bg-black bg-opacity-50 hover:bg-opacity-70 focus:outline-none focus:ring-2 focus:ring-[var(--md3-primary)]"
-              title="Close"
-              aria-label="Close fullscreen image"
-              autoFocus
-            >
-              <CloseIcon />
-            </button>
-          </div>
-        </div>
+        <FullscreenModal
+          generatedImage={generatedImage}
+          onClose={toggleFullscreen}
+        />
       )}
-
       {/* Toast Notification */}
       {toast.show && (
         <div className="fixed bottom-4 right-4 z-50">
