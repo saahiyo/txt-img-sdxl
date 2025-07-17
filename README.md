@@ -40,30 +40,59 @@ npm install
 
 ## Running the Application
 
-### Option 1: Run Frontend and API Locally (Recommended)
+### Option 1: Local Development with Custom Express Server (Recommended for Development)
 
-**Start the frontend (Vite):**
+**Start both frontend and API locally:**
 ```bash
+npm run dev:local
+```
+
+This will start:
+- Frontend (Vite) on `http://localhost:5173/`
+- API (Express server) on `http://localhost:3000/`
+
+**Or start them separately:**
+```bash
+# Terminal 1 - Frontend
 npm run dev
+
+# Terminal 2 - API
+npm run dev:api
 ```
 
-**Start the API (Vercel serverless functions):**
+### Option 2: Local Development with Vercel CLI (Deployment Testing)
+
+**Start both frontend and API with Vercel:**
 ```bash
-vercel dev
+npm run dev:vercel
 ```
-- This will serve your `api/` endpoints at `/api/health` and `/api/generate`.
 
-### Option 2: Deploy to Vercel
-- Push your code to a GitHub/GitLab/Bitbucket repo and import it into [Vercel](https://vercel.com/).
-- Vercel will automatically detect the `api/` directory and deploy your serverless functions.
+This requires Vercel CLI authentication but tests the exact deployment environment.
+
+### Option 3: Deploy to Vercel
+
+**For Production Deployment:**
+1. Push your code to GitHub/GitLab/Bitbucket
+2. Import the repository into [Vercel](https://vercel.com/)
+3. Add your environment variables in Vercel dashboard:
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
+4. Vercel will automatically detect the `api/` directory and deploy serverless functions
+
+**The serverless functions will work on Vercel because:**
+- We use lazy initialization for Redis (environment variables load properly)
+- The `vercel.json` is configured for proper routing
+- API functions are in the correct `/api` directory structure
 
 ## Usage
 
-1. Open your browser and navigate to `http://localhost:3000`
+1. Open your browser and navigate to `http://localhost:5173/` (frontend)
 2. Enter a description of the image you want to generate (Prompt)
 3. (Optional) Adjust the Negative Prompt, Style Preset, and Aspect Ratio
 4. Click "Generate Image" and wait for the AI to create your image
 5. View, download, or fullscreen the generated image
+
+**Note:** The API runs on `http://localhost:3000/` but you interact with the frontend at `http://localhost:5173/`
 
 ### Prompt Options
 - **Prompt:** Main description for the image (required)
@@ -179,18 +208,42 @@ https://<your-store-id>.public.blob.vercel-storage.com/diffusion-gen-17180312345
 - If the Blob upload fails, the function returns a 500 error.
 - The frontend displays user-friendly error messages and loading states.
 
+## Development Setup
+
+This project supports two development approaches:
+
+### 1. Express Server (Local Development)
+- **File:** `server.js` - Custom Express server that wraps Vercel functions
+- **Benefits:** Faster startup, easier debugging, works without Vercel CLI
+- **Use:** `npm run dev:local`
+
+### 2. Vercel CLI (Deployment Testing)
+- **File:** `vercel.json` - Vercel configuration for serverless functions
+- **Benefits:** Tests exact production environment
+- **Use:** `npm run dev:vercel` (requires `vercel login`)
+
+### Why Both?
+- **Development:** Use Express server for speed and convenience
+- **Pre-deployment:** Use Vercel CLI to test production environment
+- **Production:** Deploy to Vercel using the serverless functions
+
 ## Project Structure
 
 ```
 txt-img-sdxl/
 ├── src/                # React frontend
 │   ├── App.jsx         # Main React component (UI, API calls)
+│   ├── config.js       # API URLs and default parameters
 │   ├── main.jsx        # React entry point
 │   └── index.css       # Global styles
 ├── api/                # Vercel serverless functions (backend)
 │   ├── health.js       # Health check endpoint
-│   └── generate.js     # Image generation endpoint
+│   ├── generate.js     # Image generation endpoint
+│   ├── user-history.js # User generation history
+│   └── proxy-image.js  # Image proxy endpoint
 ├── public/             # Static assets
+├── server.js           # Local Express server (development)
+├── vercel.json         # Vercel deployment configuration
 └── package.json        # Dependencies and scripts
 ```
 
