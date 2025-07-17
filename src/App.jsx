@@ -309,7 +309,7 @@ function App() {
                 {generatedImage && (
                   <a
                     href={`/api/proxy-image?url=${encodeURIComponent(generatedImage)}`}
-                    download={`generated-image-${Date.now()}.png`}
+                    download={`generated-image-${Date.now()}.webp`}
                     className="md3-btn-icon group relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
                   >
                     <span className="text-base sm:text-xl"><DownloadIcon /></span>

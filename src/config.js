@@ -10,7 +10,7 @@ export const config = {
     negative_prompt: "blurry, low quality, distorted, poor lighting, bad anatomy",
     style_preset: "cinematic",
     aspect_ratio: "16:9",
-    output_format: "png",
+    output_format: "webp",
     seed: 0
   }
 };

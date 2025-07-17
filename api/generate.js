@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import { Redis } from '@upstash/redis';
 import { put } from '@vercel/blob';
+import sharp from 'sharp';
 
 const EXTERNAL_AI_API_URL = 'https://aiart-zroo.onrender.com/api/generate';
 
@@ -58,7 +59,7 @@ export default async function handler(req, res) {
       negative_prompt: negative_prompt || "blurry, low quality, distorted faces, poor lighting, extra limbs, deformed, ugly, bad anatomy",
       style_preset: style_preset || "neon-punk",
       aspect_ratio: aspect_ratio || "16:9",
-      output_format: output_format || "png",
+      output_format: output_format || "webp",
       seed: seed || 0
     };
 
@@ -90,17 +91,31 @@ export default async function handler(req, res) {
     }
 
     const result = await response.json();
-    // --- Upload to Vercel Blob ---
     let blobUrl = null;
     if (result.success && (result.direct_url || result.image_url)) {
       const imageUrl = result.direct_url || result.image_url;
       try {
         const imageResponse = await fetch(imageUrl);
         const imageBuffer = await imageResponse.arrayBuffer();
-        const filename = `diffusion-gen-${Date.now()}.png`;
+        let finalBuffer, filename;
+
+        // Determine output format (default to png)
+        const requestedFormat = (output_format || "png").toLowerCase();
+        if (requestedFormat === "webp") {
+          // Use lossless WebP conversion for no quality loss
+          finalBuffer = await sharp(Buffer.from(imageBuffer))
+            .webp({ lossless: true })
+            .toBuffer();
+          filename = `diffusion-gen-${Date.now()}.webp`;
+        } else {
+          // Default: upload original PNG
+          finalBuffer = Buffer.from(imageBuffer);
+          filename = `diffusion-gen-${Date.now()}.png`;
+        }
+
         const blob = await put(
           filename,
-          Buffer.from(imageBuffer),
+          finalBuffer,
           { access: 'public' }
         );
         blobUrl = blob.url;
